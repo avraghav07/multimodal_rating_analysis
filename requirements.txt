@@ -1,0 +1,8 @@
+numpy
+pandas
+openpyxl
+scikit-learn
+nltk
+textblob
+gensim
+scipy==1.12
