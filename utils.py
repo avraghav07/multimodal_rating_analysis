@@ -30,7 +30,7 @@ def dataPreprocessor(df):
     scaler = StandardScaler()
     scaled_features = scaler.fit_transform(numeric_features)
     scaled_df = pd.DataFrame(scaled_features, columns=[f'scaled_{feature}' for feature in numeric_features])
-    df = pd.concat([df["rating_type_Fitch", "rating_type_Moody's", 'rating_type_S&P', 'rating_numerical'], 
+    df = pd.concat([df[["rating_type_Fitch", "rating_type_Moody's", 'rating_type_S&P', 'rating_numerical', 'string_values']], 
     scaled_df
     ], axis=1)
 

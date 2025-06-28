@@ -38,11 +38,6 @@ df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].mean())
 print("Missing Values After Imputation:")
 print(df.isnull().sum())
 
-# Finding Pearson's correlation matrix for numerical features
-print("\nTop 10 features most correlated with numerical rating:")
-ratingCorr = df[numeric_cols].corr()['rating_numerical'].sort_values(ascending=False)
-print(ratingCorr[1:11])
-
 # Using the rating_map we defined earlier to convert rating into a numerical variable
 df['rating_numerical'] = df['Rating'].map(rating_map)
 
@@ -57,7 +52,18 @@ df = pd.get_dummies(df, columns=['RATING_TYPE'], prefix='rating_type', drop_firs
 # Normalize the numerical features
 numeric_features = df.select_dtypes(include=['float64', 'int64']).drop('rating_numerical', axis=1, errors='ignore')
 scaler = StandardScaler()
-df[numeric_features.columns] = scaler.fit_transform(numeric_features)
+scaled_features = scaler.fit_transform(numeric_features)
+scaled_df = pd.DataFrame(scaled_features, columns=[f'scaled_{feature}' for feature in numeric_features])
+df = pd.concat([df[["rating_type_Fitch", "rating_type_Moody's", 'rating_type_S&P', 'rating_numerical', 'string_values']], 
+scaled_df
+], axis=1)
+print(df.head(), 'head here')
+
+# Finding Pearson's correlation for numerical features with numerical rating
+print("\nTop 10 features most correlated with numerical rating:")
+numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns
+ratingCorr = df[numeric_cols].corr()['rating_numerical'].sort_values(ascending=False)
+print(ratingCorr[1:11])
 
 # Check final dataframe after transformations
 print(df.head())
