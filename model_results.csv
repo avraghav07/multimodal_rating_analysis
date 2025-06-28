@@ -1,0 +1,10 @@
+Feature Type,Model,Accuracy,F1 Score,CV Mean
+Structured,Logistic Regression,0.15,0.1043956043956044,0.1625
+Structured,Random Forest,0.25,0.18166666666666667,0.175
+Structured,XGBoost,0.1,0.07936507936507936,0.1125
+Text,Logistic Regression,0.2,0.15904761904761905,0.075
+Text,Random Forest,0.2,0.19714285714285715,0.0625
+Text,XGBoost,0.2,0.20547619047619045,0.1
+Combined,Logistic Regression,0.2,0.2032051282051282,0.1625
+Combined,Random Forest,0.25,0.21000000000000002,0.0875
+Combined,XGBoost,0.1,0.07222222222222222,0.125
