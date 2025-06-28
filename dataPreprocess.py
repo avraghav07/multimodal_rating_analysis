@@ -1,6 +1,10 @@
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from consts import rating_map
+from warnings import simplefilter
+
+# To remove annoying performance warning that doesn't really affect performance as much
+simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 
 # LOAD AND INSPECT DATA
 df = pd.read_excel('Artificial_Data.xlsx')
