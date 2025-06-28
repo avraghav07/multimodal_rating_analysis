@@ -57,11 +57,20 @@ df['subjectivity'] = sentiments.apply(lambda x: x[1])
 print(f"Average polarity: {df['polarity'].mean()}")
 print(f"Average subjectivity: {df['subjectivity'].mean()}")
 
-# Combining keyword features and word embeddings with our scaled dataframe
+# Combining keyword features, word embeddings and miscelleanous text statistics with our scaled dataframe
 df['positive_words'] = df['string_values'].apply(lambda x: countKeywords(x, positive_words))
 df['negative_words'] = df['string_values'].apply(lambda x: countKeywords(x, negative_words))
 df['sentiment_ratio'] = (df['positive_words'] - df['negative_words']) / (df['positive_words'] + df['negative_words'] + 1)
-df = pd.concat([df, embedding_df], axis=1)
+df['word_count'] = df['cleaned_text'].apply(len)
+df['char_count'] = df['string_values'].apply(lambda x: len(str(x)) if pd.notna(x) else 0)
+df['avg_word_length'] = df['string_values'].apply(
+    lambda x: np.mean([len(word) for word in str(x).split()]) if pd.notna(x) and str(x).split() else 0
+)
+df = pd.concat([df[['polarity', 'subjectivity', 'positive_words', 'negative_words', 
+                'sentiment_ratio', 'word_count', 'char_count', 'avg_word_length']], 
+                df[['Rating', 'rating_numerical', "rating_type_Fitch", "rating_type_Moody's", 'rating_type_S&P']],
+                df[[col for col in df.columns if col.startswith('scaled_')]],
+                embedding_df], axis=1)
 print(f"\nFinal feature set shape: {df.shape}")
 
 # Save combined features

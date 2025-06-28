@@ -19,19 +19,17 @@ print(f"Data shape: {df.shape}")
 # Structured (no text features) and text features (embeddings + nlp features)
 structured_features = [col for col in df.columns if col.startswith('scaled_')]
 nlp_features = ['polarity', 'subjectivity', 'positive_words', 'negative_words', 
-                'sentiment_ratio']
+                'sentiment_ratio', 'word_count', 'char_count', 'avg_word_length']
 embedding_features = [col for col in df.columns if col.startswith('embed_')]
 text_features = nlp_features + embedding_features
 
 print(f"Structured features: {len(structured_features)}")
 print(f"Text features: {len(text_features)} (NLP: {len(nlp_features)}, Embeddings: {len(embedding_features)})")
 
-# Prepare feature sets
+# Prepare feature sets as per requirements, predict against rating (classification)
 X_structured = df[structured_features]
 X_text = df[text_features]
 X_combined = df[structured_features + text_features]
-
-# Predict against Rating (Classification)
 y = df['Rating']
 le = LabelEncoder()
 y_encoded = le.fit_transform(y)
@@ -76,7 +74,7 @@ comparison_df = pd.DataFrame(comparison_data)
 print("\nBest model for each feature type:")
 for feature_type in ['Structured', 'Text', 'Combined']:
     best = comparison_df[comparison_df['Feature Type'] == feature_type].sort_values('Accuracy', ascending=False).iloc[0]
-    print(f"{feature_type}: {best['Model']} (Accuracy: {best['Accuracy']:.4f})")
+    print(f"{feature_type}: {best['Model']} (Accuracy: {best['Accuracy']})")
 
 # Calculate improvements
 struct_acc = comparison_df[comparison_df['Feature Type'] == 'Structured']['Accuracy'].max()
@@ -86,10 +84,10 @@ combined_acc = comparison_df[comparison_df['Feature Type'] == 'Combined']['Accur
 improvement = ((combined_acc - struct_acc) / struct_acc) * 100
 
 print(f"\nBest Accuracy Scores:")
-print(f"  Structured-only: {struct_acc:.4f}")
-print(f"  Text-only: {text_acc:.4f}")
-print(f"  Combined: {combined_acc:.4f}")
-print(f"\nImprovement of combined over structured: {improvement:.1f}%")
+print(f"  Structured-only: {struct_acc}")
+print(f"  Text-only: {text_acc}")
+print(f"  Combined: {combined_acc}")
+print(f"\nImprovement of combined over structured: {improvement}%")
 
 # Classification report for best combined model
 print(f"\nDetailed Classification Report (Combined - {best_name_c}):")
