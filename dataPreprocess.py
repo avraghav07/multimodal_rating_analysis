@@ -35,10 +35,9 @@ print("Missing Values After Imputation:")
 print(df.isnull().sum())
 
 # Finding Pearson's correlation matrix for numerical features
-
-corr_matrix = df[numeric_cols].corr()
-print("Pearson's Correlation Matrix:")
-print(corr_matrix)
+print("\nTop 10 features most correlated with numerical rating:")
+ratingCorr = df[numeric_cols].corr()['rating_numerical'].sort_values(ascending=False)
+print(ratingCorr[1:11])
 
 # Using the rating_map we defined earlier to convert rating into a numerical variable
 df['rating_numerical'] = df['Rating'].map(rating_map)
