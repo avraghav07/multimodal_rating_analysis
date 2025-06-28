@@ -20,8 +20,6 @@ def dataPreprocessor(df):
 
     if len(unmapped_ratings) > 0:
         print(f"Warning: These ratings are not in the mapping: {unmapped_ratings}")
-    
-    df = df.drop('Rating', axis=1)
 
     df = pd.get_dummies(df, columns=['RATING_TYPE'], prefix='rating_type', drop_first=False)
 
@@ -30,7 +28,7 @@ def dataPreprocessor(df):
     scaler = StandardScaler()
     scaled_features = scaler.fit_transform(numeric_features)
     scaled_df = pd.DataFrame(scaled_features, columns=[f'scaled_{feature}' for feature in numeric_features])
-    df = pd.concat([df[["rating_type_Fitch", "rating_type_Moody's", 'rating_type_S&P', 'rating_numerical', 'string_values']], 
+    df = pd.concat([df[["rating_type_Fitch", "rating_type_Moody's", 'rating_type_S&P', 'rating_numerical', 'string_values', 'Rating']], 
     scaled_df
     ], axis=1)
 
