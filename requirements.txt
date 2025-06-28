@@ -6,3 +6,6 @@ nltk
 textblob
 gensim
 scipy==1.12
+seaborn
+matplitlib
+xgboost

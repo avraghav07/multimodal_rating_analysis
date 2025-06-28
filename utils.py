@@ -3,28 +3,25 @@ import numpy as np
 import nltk
 import string
 from sklearn.preprocessing import StandardScaler
+from textblob import TextBlob
+from consts import rating_map
 
-# For converting rating to numerical
-rating_order = [
-        'AAA', 'AA+', 'AA', 'A+', 'A',
-        'BBB+', 'BBB', 'BB+', 'BB',
-        'B+', 'B'
-    ]
-rating_map = {rating: idx for idx, rating in enumerate(rating_order)}
-
+# For text processing
 nltk.download('stopwords')
 nltk.download('wordnet')
 stop_words = set(nltk.corpus.stopwords.words('english'))
 lemmatizer = nltk.stem.WordNetLemmatizer()
 
 # Data preprocessing util function
-def dataPreprocessor(df: pd.DataFrame) -> pd.DataFrame:
+def dataPreprocessor(df):
 
     df['rating_numerical'] = df['Rating'].map(rating_map)
     unmapped_ratings = df[df['rating_numerical'].isna()]['Rating'].unique()
 
     if len(unmapped_ratings) > 0:
         print(f"Warning: These ratings are not in the mapping: {unmapped_ratings}")
+    
+    df = df.drop('Rating', axis=1)
 
     df = pd.get_dummies(df, columns=['RATING_TYPE'], prefix='rating_type', drop_first=False)
 
@@ -60,3 +57,17 @@ def createWordEmbeddings(tokens, word_vectors):
     else:
         # Return zero vector if no words found
         return np.zeros(word_vectors.vector_size)
+    
+# Get polarity and subjectivity
+def getSentiment(text):
+    if not text:
+        return 0, 0
+    blob = TextBlob(text)
+    return blob.sentiment.polarity, blob.sentiment.subjectivity
+
+# To count positive and negative keywords in string_value
+def countKeywords(text, keywords):
+    if not text:
+        return 0
+    text_lower = text.lower()
+    return sum(1 for word in keywords if word in text_lower)

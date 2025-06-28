@@ -1,11 +1,10 @@
 import pandas as pd
 import numpy as np
 import nltk
-import string
 import gensim.downloader as api
 
-from dataPreprocess import dataPreprocessor
-from textblob import TextBlob
+from utils import dataPreprocessor, preprocessText, createWordEmbeddings, getSentiment, countKeywords
+from consts import positive_words, negative_words
 from sklearn.preprocessing import StandardScaler
 
 
@@ -24,42 +23,16 @@ except:
     print("Error loading GloVe, trying Word2Vec")
     word_vectors = api.load('word2vec-google-news-300')
 
-# Text Preprocessing using stopword removal, punctuation removal, lowercasing, and lemmatization
-def preprocessText(text):
-    if pd.isna(text):
-        return []
-    text = text.lower()
-    text = ''.join([char for char in text if char not in string.punctuation])
-    tokens = text.split()
-    tokens = [word for word in tokens if word not in stop_words]
-    tokens = [lemmatizer.lemmatize(word) for word in tokens]
-    return ' '.join(tokens)
-
-
-# Create word embeddings using above embedding model
-def createWordEmbeddings(tokens, word_vectors):
-    embeddings = []
-    for token in tokens:
-        if token in word_vectors:
-            embeddings.append(word_vectors[token])
-    
-    if embeddings:
-        # Average the word vectors
-        return np.mean(embeddings, axis=0)
-    else:
-        # Return zero vector if no words found
-        return np.zeros(word_vectors.vector_size)
-
-
 # Using our data preprocessor to refine the df
 unrefinedDf = pd.read_excel('Artificial_Data.xlsx')
 df = dataPreprocessor(unrefinedDf)
 
+# Preprocess text using the preprocessText function in utils
 df['cleaned_text'] = df['string_values'].apply(preprocessText)
 print("Sample Cleaned Text:")
 print(df['cleaned_text'].head())
 
-# Create word embeddings and scale
+# Create word embeddings using the createWordEmbeddings function in utils and scale
 print("\nCreating document embeddings:")
 embeddings = np.array([createWordEmbeddings(tokens, word_vectors) for tokens in df['cleaned_text']])
 scaler = StandardScaler()
@@ -69,10 +42,24 @@ embedding_df = pd.DataFrame(embedding_scaled, columns=[f'embed_{i}' for i in ran
 # Calculate embedding statistics
 print("\nEmbedding statistics:")
 print(f" Non-zero embeddings: {np.sum(np.any(embeddings != 0, axis=1))}/{len(embeddings)}")
-print(f" Mean norm: {np.mean(np.linalg.norm(embeddings, axis=1)):.3f}")
+print(f" Mean norm: {np.mean(np.linalg.norm(embeddings, axis=1))}")
 
-# Sentiment analysis and inserting sentiment score into df
-df['sentiment'] = df['string_values'].apply(lambda x: TextBlob(x).sentiment.polarity)
-print("Sample Sentiment Scores:")
-print(df[['string_values', 'sentiment']].head())
+# Getting average polarity and subjectivity using sentiment analysis
+sentiments = df['string_values'].apply(lambda x: getSentiment(x))
+df['polarity'] = sentiments.apply(lambda x: x[0])
+df['subjectivity'] = sentiments.apply(lambda x: x[1])
+
+print(f"Average polarity: {df['polarity'].mean()}")
+print(f"Average subjectivity: {df['subjectivity'].mean()}")
+
+# Simple keyword features
+df['positive_words'] = df['string_values'].apply(lambda x: countKeywords(x, positive_words))
+df['negative_words'] = df['string_values'].apply(lambda x: countKeywords(x, negative_words))
+df['sentiment_ratio'] = (df['positive_words'] - df['negative_words']) / (df['positive_words'] + df['negative_words'] + 1)
+
+print(f"\nFinal feature set shape: {df.shape}")
+
+# Save combined features
+df.to_csv('combined_features.csv', index=False)
+print("\nCombined features saved to 'combined_features.csv'")
 
