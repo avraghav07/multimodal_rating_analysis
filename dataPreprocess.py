@@ -55,7 +55,7 @@ if len(unmapped_ratings) > 0:
 df = pd.get_dummies(df, columns=['RATING_TYPE'], prefix='rating_type', drop_first=False)
 
 # Normalize the numerical features
-numeric_features = df.select_dtypes(include=['float64', 'int64']).drop('Rating_encoded', axis=1, errors='ignore')
+numeric_features = df.select_dtypes(include=['float64', 'int64']).drop('rating_numerical', axis=1, errors='ignore')
 scaler = StandardScaler()
 df[numeric_features.columns] = scaler.fit_transform(numeric_features)
 
