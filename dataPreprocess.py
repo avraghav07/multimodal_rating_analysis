@@ -54,7 +54,7 @@ numeric_features = df.select_dtypes(include=['float64', 'int64']).drop('rating_n
 scaler = StandardScaler()
 scaled_features = scaler.fit_transform(numeric_features)
 scaled_df = pd.DataFrame(scaled_features, columns=[f'scaled_{feature}' for feature in numeric_features])
-df = pd.concat([df[["rating_type_Fitch", "rating_type_Moody's", 'rating_type_S&P', 'rating_numerical', 'string_values']], 
+df = pd.concat([df[["rating_type_Fitch", "rating_type_Moody's", 'rating_type_S&P', 'rating_numerical', 'string_values', 'Rating']], 
 scaled_df
 ], axis=1)
 print(df.head(), 'head here')
@@ -65,5 +65,6 @@ numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns
 ratingCorr = df[numeric_cols].corr()['rating_numerical'].sort_values(ascending=False)
 print(ratingCorr[1:11])
 
-# Check final dataframe after transformations
+# Check final dataframe after transformations and save file
 print(df.head())
+df.to_csv('processed_data.csv', index=False)

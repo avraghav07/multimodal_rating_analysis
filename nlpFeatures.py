@@ -38,7 +38,7 @@ print("Sample Cleaned Text:")
 print(df['cleaned_text'].head(), "\n")
 
 # Create word embeddings using the createWordEmbeddings function in utils and scale
-print("Creating word Embeddings\n")
+print("Creating word embeddings\n")
 embeddings = np.array([createWordEmbeddings(tokens, word_vectors) for tokens in df['cleaned_text']])
 scaler = StandardScaler()
 embedding_scaled = scaler.fit_transform(embeddings)

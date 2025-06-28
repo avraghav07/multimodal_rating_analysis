@@ -5,7 +5,33 @@ import seaborn as sns
 import pickle
 import os
 
-print("\n2. Creating sentiment analysis plots...")
+print("Creating rating distribution plot:")
+if os.path.exists('processed_data.csv'):
+    df = pd.read_csv('processed_data.csv')
+    
+    plt.figure(figsize=(10, 6))
+    rating_order = ['AAA', 'AA+', 'AA', 'A+', 'A', 'BBB+', 'BBB', 'BB', 'B']
+    existing_ratings = [r for r in rating_order if r in df['Rating'].unique()]
+    rating_counts = df['Rating'].value_counts()[existing_ratings]
+    
+    bars = plt.bar(range(len(rating_counts)), rating_counts.values, color='skyblue', edgecolor='navy')
+    plt.xticks(range(len(rating_counts)), rating_counts.index, rotation=45)
+    plt.xlabel('Rating')
+    plt.ylabel('Count')
+    plt.title('Distribution of Ratings')
+    
+    # Add value labels on bars
+    for i, (idx, count) in enumerate(rating_counts.items()):
+        plt.text(i, count + 0.5, str(count), ha='center', va='bottom')
+    
+    plt.tight_layout()
+    plt.savefig('rating_distribution.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print("Created file: rating_distribution.png")
+else:
+    print("processed_data.csv not found. Run dataPreprocessing.py first")
+
+print("Creating sentiment analysis plots:")
 if os.path.exists('combined_features.csv'):
     df_features = pd.read_csv('combined_features.csv')
     
@@ -31,10 +57,10 @@ if os.path.exists('combined_features.csv'):
     plt.close()
     print("Created file: sentiment_analysis.png")
 else:
-    print("combined_features.csv not found - run nlpFeatures.py first")
+    print("combined_features.csv not found. Run nlpFeatures.py first")
 
 # ========== 3. MODEL COMPARISON ==========
-print("\n3. Creating model comparison plot...")
+print("Creating model comparison plot:")
 if os.path.exists('model_results.csv'):
     comparison_df = pd.read_csv('model_results.csv')
     
@@ -56,4 +82,4 @@ if os.path.exists('model_results.csv'):
     plt.close()
     print("Created file: model_comparison.png")
 else:
-    print("model_results.csv not found - run predictiveModeling.py first")
+    print("model_results.csv not found. Run predictiveModeling.py first")
