@@ -10,9 +10,12 @@ from utils import trainAndEval
 # Ignoring warnings for better readability (they do not affect performance)
 warnings.filterwarnings('ignore')
 
-print("Loading combined features:\n")
-df = pd.read_csv('combined_features.csv')
-print(f"Data shape: {df.shape}")
+try:
+    print("Loading combined features:")
+    df = pd.read_csv('combined_features.csv')
+    print(f"Data shape: {df.shape}")
+except:
+    print("Error loading combined_features.csv. Make sure you run nlpFeatures.py first.")
 
 # Preparing structured (no text) and text features (embeddings + nlp features)
 print("\n" + "="*50)

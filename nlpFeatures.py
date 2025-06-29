@@ -33,9 +33,12 @@ except:
     word_vectors = api.load('word2vec-google-news-300')
 
 # Load the output of dataPreprocess
-print("Loading processed data:")
-df = pd.read_csv('processed_data.csv')
-print(f"Data shape: {df.shape}")
+try:
+    print("Loading processed data:")
+    df = pd.read_csv('processed_data.csv')
+    print(f"Data shape: {df.shape}")
+except:
+    print("Error loading processed_data.csv. Make sure you run dataPreprocess.py first.")
 
 # Preprocess text using the preprocessText function in utils
 print("\n" + "="*50)

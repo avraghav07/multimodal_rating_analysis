@@ -11,9 +11,13 @@ from warnings import simplefilter
 # To remove annoying performance warning that doesn't really affect performance as much
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 
-print("Loading data:\n")
 # LOAD AND INSPECT DATA
-df = pd.read_excel('Artificial_Data.xlsx')
+try: 
+    print("Loading data:\n")
+    df = pd.read_excel('Artificial_Data.xlsx')
+except:
+    print("Error loading Artificial_Data.xlsx. Make sure the file is in the root folder.")
+
 print(f"First 5 rows: {df.head()}")
 print(f"\nData Info:{df.info()}" )
 print(f"\nData shape: {df.shape}")
