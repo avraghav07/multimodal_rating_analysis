@@ -8,14 +8,13 @@ import numpy as np
 import nltk
 import gensim.downloader as api
 
-from utils import preprocessText, createWordEmbeddings, getSentiment, countKeywords
+from utils import preprocess_text, create_word_embeddings, get_sentiment, count_keywords
 from consts import positive_words, negative_words
 from sklearn.preprocessing import StandardScaler
 from warnings import simplefilter
 
 # To remove annoying performance warning that doesn't really affect performance as much
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
-
 
 nltk.download('stopwords')
 nltk.download('wordnet')
@@ -32,19 +31,19 @@ except:
     print("Error loading GloVe, trying Word2Vec\n")
     word_vectors = api.load('word2vec-google-news-300')
 
-# Load the output of dataPreprocess
+# Load the output of data_preprocess
 try:
     print("Loading processed data:")
     df = pd.read_csv('processed_data.csv')
     print(f"Data shape: {df.shape}")
 except:
-    print("Error loading processed_data.csv. Make sure you run dataPreprocess.py first.")
+    print("Error loading processed_data.csv. Make sure you run data_preprocess.py first.")
 
-# Preprocess text using the preprocessText function in utils
+# Preprocess text using the preprocess_text function in utils
 print("\n" + "="*50)
 print("TEXT PREPROCESSING")
 print("="*50)
-df['cleaned_text'] = df['string_values'].apply(preprocessText)
+df['cleaned_text'] = df['string_values'].apply(preprocess_text)
 print("Sample Cleaned Text:")
 print(df['cleaned_text'].head(), "\n")
 
@@ -53,12 +52,12 @@ for i in range(3):
     print(f"\nOriginal: {df['string_values'].iloc[i][:100]}")
     print(f"Tokens: {df['cleaned_text'].iloc[i]}")
 
-# Create word embeddings using the createWordEmbeddings function in utils and scale
+# Create word embeddings using the create_word_embeddings function in utils and scale
 print("\n" + "="*50)
 print("FEATURE EXTRACTION")
 print("="*50)
 print("Creating word embeddings\n")
-embeddings = np.array([createWordEmbeddings(tokens, word_vectors) for tokens in df['cleaned_text']])
+embeddings = np.array([create_word_embeddings(tokens, word_vectors) for tokens in df['cleaned_text']])
 scaler = StandardScaler()
 embedding_scaled = scaler.fit_transform(embeddings)
 embedding_df = pd.DataFrame(embedding_scaled, columns=[f'embed_{i}' for i in range(embeddings.shape[1])])
@@ -70,7 +69,7 @@ print(f"Mean norm: {np.mean(np.linalg.norm(embeddings, axis=1))}")
 
 # Getting average polarity and subjectivity using sentiment analysis
 print("\nExtracting sentiment features:")
-sentiments = df['string_values'].apply(lambda x: getSentiment(x))
+sentiments = df['string_values'].apply(lambda x: get_sentiment(x))
 df['polarity'] = sentiments.apply(lambda x: x[0])
 df['subjectivity'] = sentiments.apply(lambda x: x[1])
 
@@ -79,8 +78,8 @@ print(f"Average subjectivity: {df['subjectivity'].mean()}")
 
 # Extracting keyword features and text statistics, then combining these with our word embeddings and our scaled dataframe
 print("\nExtracting keyword features:")
-df['positive_words'] = df['string_values'].apply(lambda x: countKeywords(x, positive_words))
-df['negative_words'] = df['string_values'].apply(lambda x: countKeywords(x, negative_words))
+df['positive_words'] = df['string_values'].apply(lambda x: count_keywords(x, positive_words))
+df['negative_words'] = df['string_values'].apply(lambda x: count_keywords(x, negative_words))
 df['sentiment_ratio'] = (df['positive_words'] - df['negative_words']) / (df['positive_words'] + df['negative_words'] + 1)
 
 print("\nExtracting text statistics:")

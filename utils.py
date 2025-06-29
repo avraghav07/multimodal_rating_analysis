@@ -19,7 +19,7 @@ stop_words = set(nltk.corpus.stopwords.words('english'))
 lemmatizer = nltk.stem.WordNetLemmatizer()
 
 # Data preprocessing util function
-def dataPreprocessor(df):
+def data_preprocessor(df):
 
     df['rating_numerical'] = df['Rating'].map(rating_map)
     unmapped_ratings = df[df['rating_numerical'].isna()]['Rating'].unique()
@@ -34,14 +34,18 @@ def dataPreprocessor(df):
     scaler = StandardScaler()
     scaled_features = scaler.fit_transform(numeric_features)
     scaled_df = pd.DataFrame(scaled_features, columns=[f'scaled_{feature}' for feature in numeric_features])
-    df = pd.concat([df[["rating_type_Fitch", "rating_type_Moody's", 'rating_type_S&P', 'rating_numerical', 'string_values', 'Rating']], 
-    scaled_df
-    ], axis=1)
+    df = pd.concat([df[['rating_type_Fitch', 
+                        'rating_type_Moody\'s', 
+                        'rating_type_S&P', 
+                        'rating_numerical', 
+                        'string_values', 
+                        'Rating']], 
+                        scaled_df], axis=1)
 
     return df
 
 # Text Preprocessing using stopword removal, punctuation removal, lowercasing, and lemmatization.
-def preprocessText(text):
+def preprocess_text(text):
     if pd.isna(text):
         return []
     text = text.lower()
@@ -51,9 +55,8 @@ def preprocessText(text):
     tokens = [lemmatizer.lemmatize(word) for word in tokens]
     return ' '.join(tokens)
 
-
 # Create word embeddings using above embedding model
-def createWordEmbeddings(tokens, word_vectors):
+def create_word_embeddings(tokens, word_vectors):
     embeddings = []
     for token in tokens:
         if token in word_vectors:
@@ -67,22 +70,22 @@ def createWordEmbeddings(tokens, word_vectors):
         return np.zeros(word_vectors.vector_size)
     
 # Get polarity and subjectivity
-def getSentiment(text):
+def get_sentiment(text):
     if not text:
         return 0, 0
     blob = TextBlob(text)
     return blob.sentiment.polarity, blob.sentiment.subjectivity
 
 # To count positive and negative keywords in string_value
-def countKeywords(text, keywords):
+def count_keywords(text, keywords):
     if not text:
         return 0
     text_lower = text.lower()
     return sum(1 for word in keywords if word in text_lower)
 
 # Train and Eval function used in predictive modeling
-def trainAndEval(X_train, X_test, y_train, y_test, feature_type):
-    
+def train_and_eval(X_train, X_test, y_train, y_test, feature_type):
+
     print(f"\n--- {feature_type.upper()} FEATURES ---")
     
     models = {

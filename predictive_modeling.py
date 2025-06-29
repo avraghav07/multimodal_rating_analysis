@@ -5,7 +5,7 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
-from utils import trainAndEval
+from utils import train_and_eval
 
 # Ignoring warnings for better readability (they do not affect performance)
 warnings.filterwarnings('ignore')
@@ -15,7 +15,7 @@ try:
     df = pd.read_csv('combined_features.csv')
     print(f"Data shape: {df.shape}")
 except:
-    print("Error loading combined_features.csv. Make sure you run nlpFeatures.py first.")
+    print("Error loading combined_features.csv. Make sure you run nlp_features.py first.")
 
 # Preparing structured (no text) and text features (embeddings + nlp features)
 print("\n" + "="*50)
@@ -48,20 +48,20 @@ X_train_c, X_test_c, _, _ = train_test_split(X_combined, y_encoded, test_size=0.
 
 print(f"\nTrain size: {len(X_train_s)}, Test size: {len(X_test_s)}")
 
-# Training the model using trainAndEval
+# Training the model using train_and_eval
 print("\n" + "="*50)
 print("MODEL TRAINING")
 print("="*50)
 
-results_structured, best_model_s, best_name_s, pred_s = trainAndEval(
+results_structured, best_model_s, best_name_s, pred_s = train_and_eval(
     X_train_s, X_test_s, y_train, y_test, "Structured"
 )
 
-results_text, best_model_t, best_name_t, pred_t = trainAndEval(
+results_text, best_model_t, best_name_t, pred_t = train_and_eval(
     X_train_t, X_test_t, y_train, y_test, "Text"
 )
 
-results_combined, best_model_c, best_name_c, pred_c = trainAndEval(
+results_combined, best_model_c, best_name_c, pred_c = train_and_eval(
     X_train_c, X_test_c, y_train, y_test, "Combined"
 )
 
@@ -113,7 +113,6 @@ if isinstance(best_model_c, RandomForestClassifier):
     text_importance = importance_df[~importance_df['feature'].str.startswith('scaled_')]
     print(text_importance[['feature', 'importance']].head().to_string(index=False))
 
-
 # Final report
 print("\n" + "="*50)
 print("FINAL REPORT")
@@ -127,9 +126,9 @@ combined_acc = comparison_df[comparison_df['Feature Type'] == 'Combined']['Accur
 improvement = ((combined_acc - struct_acc) / struct_acc) * 100
 
 print(f"\nBest Accuracy Scores:")
-print(f"  Structured-only: {struct_acc}")
-print(f"  Text-only: {text_acc}")
-print(f"  Combined: {combined_acc}")
+print(f"Structured-only: {struct_acc}")
+print(f"Text-only: {text_acc}")
+print(f"Combined: {combined_acc}")
 print(f"\nImprovement of combined over structured: {improvement}%")
 
 # Classification report for best combined model

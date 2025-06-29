@@ -28,7 +28,7 @@ if os.path.exists('processed_data.csv'):
     plt.close()
     print("Created file: rating_distribution.png")
 else:
-    print("processed_data.csv not found. Run dataPreprocessing.py first")
+    print("processed_data.csv not found. Run data_preprocess.py first")
 
 print("Creating sentiment analysis plots:\n")
 if os.path.exists('combined_features.csv'):
@@ -56,7 +56,7 @@ if os.path.exists('combined_features.csv'):
     plt.close()
     print("Created file: sentiment_analysis.png")
 else:
-    print("combined_features.csv not found. Run nlpFeatures.py first")
+    print("combined_features.csv not found. Run nlp_features.py first")
 
 # ========== 3. MODEL COMPARISON ==========
 print("Creating model comparison plot:\n")
@@ -81,4 +81,4 @@ if os.path.exists('model_results.csv'):
     plt.close()
     print("Created file: model_comparison.png")
 else:
-    print("model_results.csv not found. Run predictiveModeling.py first")
+    print("model_results.csv not found. Run predictive_modeling.py first")

@@ -2,7 +2,6 @@
 # Then, it focuses on showing basic descriptive statistics and distribution of our independent variable Rating.
 # Then, preprocessing is done - Normalization of the numeircal data, one-hot encoding of Rating_type and Rating is converted into a numerical variable.
 
-
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from consts import rating_map
@@ -19,10 +18,10 @@ except:
     print("Error loading Artificial_Data.xlsx. Make sure the file is in the root folder.")
 
 print(f"First 5 rows: {df.head()}")
-print(f"\nData Info:{df.info()}" )
+print(f"\nData Info: {df.info()}")
 print(f"\nData shape: {df.shape}")
 
-# Basic descriptive statistics
+# Basic descriptive statistics and rating distribution
 print("\nDescriptive Statistics:")
 print(df.describe())
 
@@ -72,10 +71,12 @@ numeric_features = df.select_dtypes(include=['float64', 'int64']).drop('rating_n
 scaler = StandardScaler()
 scaled_features = scaler.fit_transform(numeric_features)
 scaled_df = pd.DataFrame(scaled_features, columns=[f'scaled_{feature}' for feature in numeric_features])
-processed_df = pd.concat([df[["rating_type_Fitch", "rating_type_Moody's", 'rating_type_S&P', 'rating_numerical', 'string_values', 'Rating']], 
-scaled_df
-], axis=1)
-
+processed_df = pd.concat([df[['rating_type_Fitch', 
+                              'rating_type_Moody\'s', 
+                              'rating_type_S&P', 'rating_numerical', 
+                              'string_values', 
+                              'Rating']], 
+                              scaled_df], axis=1)
 
 # Finding Pearson's correlation for numerical features with numerical rating
 print("\nTop 10 features most correlated with numerical rating:")
@@ -84,6 +85,6 @@ ratingCorr = processed_df[numeric_cols].corr()['rating_numerical'].sort_values(a
 print(ratingCorr[1:11])
 
 # Check final dataframe after transformations and save file
-print(f"Final look of the dataframe after transformations: {processed_df.head()}")
+print(f"\nFinal look of the dataframe after transformations: {processed_df.head()}")
 print("\nSaving processed data to processed_data.csv")
 processed_df.to_csv('processed_data.csv', index=False)
