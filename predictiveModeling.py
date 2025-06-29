@@ -1,22 +1,24 @@
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import warnings
 
-from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, classification_report
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from utils import trainAndEval
 
 # Ignoring warnings for better readability (they do not affect performance)
 warnings.filterwarnings('ignore')
 
-print("Loading combined features:")
+print("Loading combined features:\n")
 df = pd.read_csv('combined_features.csv')
 print(f"Data shape: {df.shape}")
 
-# Structured (no text features) and text features (embeddings + nlp features)
+# Preparing structured (no text) and text features (embeddings + nlp features)
+print("\n" + "="*50)
+print("PREPARING FEATURE SETS")
+print("="*50)
+
 structured_features = [col for col in df.columns if col.startswith('scaled_')]
 nlp_features = ['polarity', 'subjectivity', 'positive_words', 'negative_words', 
                 'sentiment_ratio', 'word_count', 'char_count', 'avg_word_length']
@@ -43,6 +45,11 @@ X_train_c, X_test_c, _, _ = train_test_split(X_combined, y_encoded, test_size=0.
 
 print(f"\nTrain size: {len(X_train_s)}, Test size: {len(X_test_s)}")
 
+# Training the model using trainAndEval
+print("\n" + "="*50)
+print("MODEL TRAINING")
+print("="*50)
+
 results_structured, best_model_s, best_name_s, pred_s = trainAndEval(
     X_train_s, X_test_s, y_train, y_test, "Structured"
 )
@@ -54,6 +61,11 @@ results_text, best_model_t, best_name_t, pred_t = trainAndEval(
 results_combined, best_model_c, best_name_c, pred_c = trainAndEval(
     X_train_c, X_test_c, y_train, y_test, "Combined"
 )
+
+# Comparing the results
+print("\n" + "="*50)
+print("RESULTS COMPARISON")
+print("="*50)
 
 comparison_data = []
 for feature_type, results in [('Structured', results_structured), 
@@ -76,6 +88,34 @@ for feature_type in ['Structured', 'Text', 'Combined']:
     best = comparison_df[comparison_df['Feature Type'] == feature_type].sort_values('Accuracy', ascending=False).iloc[0]
     print(f"{feature_type}: {best['Model']} (Accuracy: {best['Accuracy']})")
 
+# Check and save feature importance if model is Random Forest
+if isinstance(best_model_c, RandomForestClassifier):
+    feature_importance = best_model_c.feature_importances_
+    feature_names = structured_features + text_features
+    
+    importance_df = pd.DataFrame({
+        'feature': feature_names,
+        'importance': feature_importance
+    }).sort_values('importance', ascending=False)
+    
+    importance_df.to_csv('feature_importance.csv', index=False)
+    print("Feature importance saved to 'feature_importance.csv'")
+    
+    # Print top features
+    print("\nTop 5 structured features:")
+    struct_importance = importance_df[importance_df['feature'].str.startswith('scaled_')]
+    print(struct_importance[['feature', 'importance']].head().to_string(index=False))
+    
+    print("\nTop 5 text features:")
+    text_importance = importance_df[~importance_df['feature'].str.startswith('scaled_')]
+    print(text_importance[['feature', 'importance']].head().to_string(index=False))
+
+
+# Final report
+print("\n" + "="*50)
+print("FINAL REPORT")
+print("="*50)
+
 # Calculate the improvement from using a multimodal model
 struct_acc = comparison_df[comparison_df['Feature Type'] == 'Structured']['Accuracy'].max()
 text_acc = comparison_df[comparison_df['Feature Type'] == 'Text']['Accuracy'].max()
@@ -96,3 +136,7 @@ print(classification_report(y_test, pred_c, target_names=le.classes_))
 # Saving model performance 
 comparison_df.to_csv('model_results.csv', index=False)
 print("\nResults saved to 'model_results.csv'")
+
+print("\n" + "="*50)
+print("ANALYSIS COMPLETE!")
+print("="*50)

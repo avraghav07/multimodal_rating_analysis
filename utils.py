@@ -82,7 +82,7 @@ def countKeywords(text, keywords):
 
 # Train and Eval function used in predictive modeling
 def trainAndEval(X_train, X_test, y_train, y_test, feature_type):
-    """Train multiple models and evaluate performance"""
+    
     print(f"\n--- {feature_type.upper()} FEATURES ---")
     
     models = {

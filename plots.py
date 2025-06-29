@@ -1,11 +1,10 @@
+# This script outputs all the plots. Make sure you run this at the end.
+
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
-import pickle
 import os
 
-print("Creating rating distribution plot:")
+print("Creating rating distribution plot:\n")
 if os.path.exists('processed_data.csv'):
     df = pd.read_csv('processed_data.csv')
     
@@ -31,7 +30,7 @@ if os.path.exists('processed_data.csv'):
 else:
     print("processed_data.csv not found. Run dataPreprocessing.py first")
 
-print("Creating sentiment analysis plots:")
+print("Creating sentiment analysis plots:\n")
 if os.path.exists('combined_features.csv'):
     df_features = pd.read_csv('combined_features.csv')
     
@@ -60,7 +59,7 @@ else:
     print("combined_features.csv not found. Run nlpFeatures.py first")
 
 # ========== 3. MODEL COMPARISON ==========
-print("Creating model comparison plot:")
+print("Creating model comparison plot:\n")
 if os.path.exists('model_results.csv'):
     comparison_df = pd.read_csv('model_results.csv')
     
