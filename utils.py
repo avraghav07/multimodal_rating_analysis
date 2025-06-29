@@ -25,7 +25,7 @@ def data_preprocessor(df):
     unmapped_ratings = df[df['rating_numerical'].isna()]['Rating'].unique()
 
     if len(unmapped_ratings) > 0:
-        print(f"Warning: These ratings are not in the mapping: {unmapped_ratings}")
+        print(f'Warning: These ratings are not in the mapping: {unmapped_ratings}')
 
     df = pd.get_dummies(df, columns=['RATING_TYPE'], prefix='rating_type', drop_first=False)
 
@@ -86,7 +86,7 @@ def count_keywords(text, keywords):
 # Train and Eval function used in predictive modeling
 def train_and_eval(X_train, X_test, y_train, y_test, feature_type):
 
-    print(f"\n--- {feature_type.upper()} FEATURES ---")
+    print(f'\n--- {feature_type.upper()} FEATURES ---')
     
     models = {
         'Logistic Regression': LogisticRegression(max_iter=1000, random_state=42),
@@ -121,10 +121,10 @@ def train_and_eval(X_train, X_test, y_train, y_test, feature_type):
             'predictions': y_pred
         }
         
-        print(f"\n{name}:")
-        print(f"  Accuracy: {accuracy:.4f}")
-        print(f"  F1 Score: {f1:.4f}")
-        print(f"  CV Score: {cv_scores.mean():.4f} (+/- {cv_scores.std() * 2:.4f})")
+        print(f'\n{name}:')
+        print(f'  Accuracy: {accuracy:.4f}')
+        print(f'  F1 Score: {f1:.4f}')
+        print(f'  CV Score: {cv_scores.mean():.4f} (+/- {cv_scores.std() * 2:.4f})')
         
         if accuracy > best_score:
             best_score = accuracy

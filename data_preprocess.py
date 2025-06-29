@@ -8,36 +8,36 @@ from consts import rating_map
 from warnings import simplefilter
 
 # To remove annoying performance warning that doesn't really affect performance as much
-simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
+simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
 
 # LOAD AND INSPECT DATA
 try: 
-    print("Loading data:\n")
+    print('Loading data:\n')
     df = pd.read_excel('Artificial_Data.xlsx')
 except:
-    print("Error loading Artificial_Data.xlsx. Make sure the file is in the root folder.")
+    print('Error loading Artificial_Data.xlsx. Make sure the file is in the root folder.')
 
-print(f"First 5 rows: {df.head()}")
-print(f"\nData Info: {df.info()}")
-print(f"\nData shape: {df.shape}")
+print(f'First 5 rows: {df.head()}')
+print(f'\nData Info: {df.info()}')
+print(f'\nData shape: {df.shape}')
 
 # Basic descriptive statistics and rating distribution
-print("\nDescriptive Statistics:")
+print('\nDescriptive Statistics:')
 print(df.describe())
 
-print("\nRating distribution:")
+print('\nRating distribution:')
 print(df['Rating'].value_counts().sort_index())
 
-print("\nRating Type distribution:")
+print('\nRating Type distribution:')
 print(df['RATING_TYPE'].value_counts())
 
 # Check for missing values
-print("\nMissing Values:")
+print('\nMissing Values:')
 print(df.isnull().sum())
 
-print("\n" + "="*50)
-print("DATA PREPROCESSING")
-print("="*50)
+print('\n' + '='*50)
+print('DATA PREPROCESSING')
+print('='*50)
 # DATA PREPROCESSING
 
 # There are no missing values in this file as shown by the above print statement. 
@@ -52,7 +52,7 @@ numeric_cols = df.select_dtypes(include=['float64', 'int64']).columns
 df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].mean())
 
 # Check remaining missing values. None in this case
-print("Missing Values After Imputation:")
+print('Missing Values After Imputation:')
 print(df.isnull().sum())
 
 # Using the rating_map we defined earlier to convert rating into a numerical variable
@@ -61,7 +61,7 @@ df['rating_numerical'] = df['Rating'].map(rating_map)
 # Check if any ratings are unmapped and ignore them. Not needed in this case but it's a nice-to-have.
 unmapped_ratings = df[df['rating_numerical'].isna()]['Rating'].unique()
 if len(unmapped_ratings) > 0:
-    print(f"Warning: These ratings are not in the mapping: {unmapped_ratings}")
+    print(f'Warning: These ratings are not in the mapping: {unmapped_ratings}')
 
 # Convert rating_type to categorical variable. Use get_dummies to do one-hot encoding
 df = pd.get_dummies(df, columns=['RATING_TYPE'], prefix='rating_type', drop_first=False)
@@ -79,12 +79,12 @@ processed_df = pd.concat([df[['rating_type_Fitch',
                               scaled_df], axis=1)
 
 # Finding Pearson's correlation for numerical features with numerical rating
-print("\nTop 10 features most correlated with numerical rating:")
+print('\nTop 10 features most correlated with numerical rating:')
 numeric_cols = processed_df.select_dtypes(include=['float64', 'int64']).columns
 ratingCorr = processed_df[numeric_cols].corr()['rating_numerical'].sort_values(ascending=False)
 print(ratingCorr[1:11])
 
 # Check final dataframe after transformations and save file
-print(f"\nFinal look of the dataframe after transformations: {processed_df.head()}")
-print("\nSaving processed data to processed_data.csv")
+print(f'\nFinal look of the dataframe after transformations: {processed_df.head()}')
+print('\nSaving processed data to processed_data.csv')
 processed_df.to_csv('processed_data.csv', index=False)

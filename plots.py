@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-print("Creating rating distribution plot:\n")
+print('Creating rating distribution plot:\n')
 if os.path.exists('processed_data.csv'):
     df = pd.read_csv('processed_data.csv')
     
@@ -26,11 +26,11 @@ if os.path.exists('processed_data.csv'):
     plt.tight_layout()
     plt.savefig('rating_distribution.png', dpi=300, bbox_inches='tight')
     plt.close()
-    print("Created file: rating_distribution.png")
+    print('Created file: rating_distribution.png')
 else:
-    print("processed_data.csv not found. Run data_preprocess.py first")
+    print('processed_data.csv not found. Run data_preprocess.py first')
 
-print("Creating sentiment analysis plots:\n")
+print('Creating sentiment analysis plots:\n')
 if os.path.exists('combined_features.csv'):
     df_features = pd.read_csv('combined_features.csv')
     
@@ -54,12 +54,12 @@ if os.path.exists('combined_features.csv'):
     plt.tight_layout()
     plt.savefig('sentiment_analysis.png', dpi=300, bbox_inches='tight')
     plt.close()
-    print("Created file: sentiment_analysis.png")
+    print('Created file: sentiment_analysis.png')
 else:
-    print("combined_features.csv not found. Run nlp_features.py first")
+    print('combined_features.csv not found. Run nlp_features.py first')
 
 # ========== 3. MODEL COMPARISON ==========
-print("Creating model comparison plot:\n")
+print('Creating model comparison plot:\n')
 if os.path.exists('model_results.csv'):
     comparison_df = pd.read_csv('model_results.csv')
     
@@ -79,6 +79,6 @@ if os.path.exists('model_results.csv'):
     plt.tight_layout()
     plt.savefig('model_comparison.png', dpi=300, bbox_inches='tight')
     plt.close()
-    print("Created file: model_comparison.png")
+    print('Created file: model_comparison.png')
 else:
-    print("model_results.csv not found. Run predictive_modeling.py first")
+    print('model_results.csv not found. Run predictive_modeling.py first')
